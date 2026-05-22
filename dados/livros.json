@@ -3,66 +3,24 @@
     "id": 1,
     "nome": "Harry Potter",
     "autor": "J.K Rowling",
+    "preco": 39.9,
+    "estoque": 10,
     "disponivel": true
   },
   {
     "id": 2,
     "nome": "Senhor dos Anéis",
     "autor": "Tolkien",
-    "disponivel": false
+    "preco": 59.9,
+    "estoque": 5,
+    "disponivel": true
   },
   {
     "id": 3,
     "nome": "Dom Casmurro",
     "autor": "Machado de Assis",
-    "disponivel": true
-  },
-  {
-    "id": 4,
-    "nome": "Dom Casmurro",
-    "autor": "Machado de Assis",
-    "disponivel": true
-  },
-  {
-    "id": 5,
-    "nome": "Anjos da Lei",
-    "autor": "Vinicius Moura",
-    "disponivel": true
-  },
-  {
-    "id": 6,
-    "nome": "João",
-    "autor": "Pedro Alvares Cabral",
-    "disponivel": true
-  },
-  {
-    "id": 7,
-    "nome": "1",
-    "autor": "",
-    "disponivel": true
-  },
-  {
-    "id": 8,
-    "nome": "dsa",
-    "autor": "sad",
-    "disponivel": true
-  },
-  {
-    "id": 9,
-    "nome": "2",
-    "autor": "2",
-    "disponivel": true
-  },
-  {
-    "id": 10,
-    "nome": "dsad",
-    "autor": "dsasd",
-    "disponivel": true
-  },
-  {
-    "id": 11,
-    "nome": "Teste",
-    "autor": "Testado",
+    "preco": 25.5,
+    "estoque": 8,
     "disponivel": true
   }
 ]
