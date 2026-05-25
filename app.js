@@ -21,9 +21,32 @@ function iniciarSistema() {
 
     if (resposta == 1) {
 
-      funcoes.listarLivros();
+      let listaLivros = funcoes.listarLivros();
 
-      iniciarSistema();
+if (listaLivros.length === 0) {
+
+  console.log("Nenhum livro cadastrado.");
+
+} else {
+
+  listaLivros.forEach(livro => {
+
+    console.log(`
+========================
+ID: ${livro.id}
+Nome: ${livro.nome}
+Autor: ${livro.autor}
+Preço: R$ ${livro.preco}
+Estoque: ${livro.estoque}
+Disponível: ${livro.disponivel ? "Sim" : "Não"}
+========================
+`);
+
+  });
+
+}
+
+iniciarSistema();
     }
 
     else if (resposta == 2) {
@@ -57,20 +80,40 @@ function iniciarSistema() {
 
     }
 
-    else if (resposta == 3) {
+   else if (resposta == 3) {
 
-      rl.question("Digite o nome do livro: ", function(nome) {
+  rl.question("Digite o nome do livro: ", function(nome) {
 
-        console.log(
-          funcoes.buscarLivro(nome)
-        );
+    let resultados = funcoes.buscarLivro(nome);
 
-        iniciarSistema();
+    if (resultados.length === 0) {
+
+      console.log("Livro não encontrado.");
+
+    } else {
+
+      resultados.forEach(livro => {
+
+        console.log(`
+========================
+ID: ${livro.id}
+Nome: ${livro.nome}
+Autor: ${livro.autor}
+Preço: R$ ${livro.preco}
+Estoque: ${livro.estoque}
+Disponível: ${livro.disponivel ? "Sim" : "Não"}
+========================
+`);
 
       });
 
     }
 
+    iniciarSistema();
+
+  });
+
+}
     else if (resposta == 4) {
 
       rl.question("Digite o ID do livro: ", function(id) {

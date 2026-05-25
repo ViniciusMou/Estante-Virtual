@@ -10,25 +10,10 @@ function salvarLivros() {
 
 function listarLivros() {
 
-  if (livros.length === 0) {
-    return "Nenhum livro cadastrado.";
-  }
-
-  livros.forEach(livro => {
-
-    console.log(`
-========================
-ID: ${livro.id}
-Nome: ${livro.nome}
-Autor: ${livro.autor}
-Preço: R$ ${livro.preco}
-Estoque: ${livro.estoque}
-Disponível: ${livro.disponivel ? "Sim" : "Não"}
-========================
-`);
-  });
-
+  return livros;
 }
+
+ 
 
 function cadastrarLivro(nome, autor, preco, estoque) {
 
@@ -66,26 +51,9 @@ function buscarLivro(nome) {
     l => l.nome.toLowerCase().includes(nome.toLowerCase())
   );
 
-  if (livrosEncontrados.length === 0) {
-    return "Livro não encontrado.";
-  }
-
-  livrosEncontrados.forEach(livro => {
-
-    console.log(`
-========================
-ID: ${livro.id}
-Nome: ${livro.nome}
-Autor: ${livro.autor}
-Preço: R$ ${livro.preco}
-Estoque: ${livro.estoque}
-Disponível: ${livro.disponivel ? "Sim" : "Não"}
-========================
-`);
-
-  });
-
+  return livrosEncontrados;
 }
+
 
 
 function removerLivro(id) {
@@ -111,9 +79,20 @@ function editarLivro(id, novoNome, novoAutor, novoPreco, novoEstoque) {
     l => l.id === id
   );
 
-  if (!livro) {
-    return "Livro não encontrado.";
-  }
+ if (!livro) {
+  return "Livro não encontrado.";
+}
+
+if (!novoNome || !novoAutor) {
+  return "Nome e autor são obrigatórios.";
+}
+
+if (novoPreco < 0 || novoEstoque < 0) {
+  return "Preço e estoque não podem ser negativos.";
+}
+
+
+  
 
   livro.nome = novoNome;
   livro.autor = novoAutor;
@@ -135,6 +114,7 @@ function venderLivro(id) {
   if (!livro) {
     return "Livro não encontrado.";
   }
+  
 
   if (livro.estoque <= 0) {
     return "Livro sem estoque.";
@@ -151,11 +131,37 @@ function venderLivro(id) {
   return "Venda realizada com sucesso.";
 }
 
+function estatisticasLivros() {
+
+  let totalLivros = livros.length;
+
+  let livrosDisponiveis = livros.filter(
+    livro => livro.disponivel
+  ).length;
+
+  let livrosSemEstoque = livros.filter(
+    livro => livro.estoque === 0
+  ).length;
+
+  let valorTotalEstoque = livros.reduce(
+    (total, livro) => total + (livro.preco * livro.estoque),
+    0
+  );
+
+  return {
+    totalLivros,
+    livrosDisponiveis,
+    livrosSemEstoque,
+    valorTotalEstoque
+  };
+}
+
 module.exports = {
   listarLivros,
   cadastrarLivro,
   buscarLivro,
   removerLivro,
   editarLivro,
-  venderLivro
+  venderLivro,
+  estatisticasLivros
 };
