@@ -15,6 +15,8 @@ function iniciarSistema() {
   console.log("4 - Remover livro");
   console.log("5 - Editar livro");
   console.log("6 - Vender livro");
+  console.log("7 - Estatísticas");
+  console.log("8 - Buscar livro por ID");
   console.log("0 - Sair");
 
   rl.question("Escolha uma opção: ", function(resposta) {
@@ -166,30 +168,89 @@ Disponível: ${livro.disponivel ? "Sim" : "Não"}
 
     else if (resposta == 6) {
 
-      rl.question("Digite o ID do livro: ", function(id) {
+  rl.question("Digite o ID do livro: ", function(id) {
 
-        console.log(
-          funcoes.venderLivro(Number(id))
-        );
+    console.log(
+      funcoes.venderLivro(Number(id))
+    );
 
-        iniciarSistema();
+    iniciarSistema();
 
-      });
+  });
+
+}
+
+else if (resposta == 7) {
+
+  let estatisticas = funcoes.estatisticasLivros();
+
+  if (estatisticas.totalLivros === 0) {
+
+    console.log("Nenhum livro cadastrado.");
+
+  } else {
+
+    console.log(`
+========================
+ESTATÍSTICAS
+========================
+Total de livros: ${estatisticas.totalLivros}
+Livros disponíveis: ${estatisticas.livrosDisponiveis}
+Livros sem estoque: ${estatisticas.livrosSemEstoque}
+Valor total em estoque: R$ ${estatisticas.valorTotalEstoque}
+========================
+`);
+
+  }
+
+  iniciarSistema();
+
+}
+else if (resposta == 8) {
+
+  rl.question("Digite o ID do livro: ", function(id) {
+
+    let livro = funcoes.buscarLivroPorId(Number(id));
+
+    if (!livro) {
+
+      console.log("Livro não encontrado.");
+
+    } else {
+
+      console.log(`
+========================
+ID: ${livro.id}
+Nome: ${livro.nome}
+Autor: ${livro.autor}
+Preço: R$ ${livro.preco}
+Estoque: ${livro.estoque}
+Disponível: ${livro.disponivel ? "Sim" : "Não"}
+========================
+`);
 
     }
 
-    else if (resposta == 0) {
+    iniciarSistema();
 
-      console.log("Sistema encerrado.");
-      rl.close();
-    }
+  });
 
-    else {
+}
 
-      console.log("Opção inválida.");
+else if (resposta == 0) {
 
-      iniciarSistema();
-    }
+  console.log("Sistema encerrado.");
+  rl.close();
+
+}
+
+else {
+
+  console.log("Opção inválida.");
+
+  iniciarSistema();
+
+}
 
   });
 

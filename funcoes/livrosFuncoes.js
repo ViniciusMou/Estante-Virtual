@@ -54,6 +54,15 @@ function buscarLivro(nome) {
   return livrosEncontrados;
 }
 
+function buscarLivroPorId(id) {
+
+  let livro = livros.find(
+    l => l.id === id
+  );
+
+  return livro;
+
+}
 
 
 function removerLivro(id) {
@@ -131,6 +140,8 @@ function venderLivro(id) {
   return "Venda realizada com sucesso.";
 }
 
+
+
 function estatisticasLivros() {
 
   let totalLivros = livros.length;
@@ -160,6 +171,7 @@ module.exports = {
   listarLivros,
   cadastrarLivro,
   buscarLivro,
+  buscarLivroPorId,
   removerLivro,
   editarLivro,
   venderLivro,

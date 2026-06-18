@@ -1,13 +1,5 @@
 [
   {
-    "id": 1,
-    "nome": "Harry Potter",
-    "autor": "J.K Rowling",
-    "preco": 39.9,
-    "estoque": 10,
-    "disponivel": true
-  },
-  {
     "id": 2,
     "nome": "Senhor dos Anéis",
     "autor": "Tolkien",
@@ -22,5 +14,13 @@
     "preco": 25.5,
     "estoque": 8,
     "disponivel": true
+  },
+  {
+    "id": 4,
+    "nome": "aaaaa",
+    "autor": "aaaaa",
+    "preco": null,
+    "estoque": null,
+    "disponivel": false
   }
 ]
