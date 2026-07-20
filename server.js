@@ -1,5 +1,5 @@
 const express = require("express");
-const funcoes = require("./funcoes/livrosFuncoes");
+const conexao = require("./conexao");
 
 const app = express();
 
@@ -10,8 +10,19 @@ app.get("/", function(req, res) {
 });
 
 app.get("/livros", function(req, res) {
-  let livros = funcoes.listarLivros();
-  res.json(livros);
+
+    conexao.query("SELECT * FROM livros", function(err, results) {
+
+        if (err) {
+            return res.status(500).json({
+                mensagem: "Erro ao buscar livros."
+            });
+        }
+
+        res.json(results);
+
+    });
+
 });
 
 app.get("/livros/:id", function(req, res) {
@@ -29,18 +40,27 @@ app.get("/livros/:id", function(req, res) {
 });
 
 app.post("/livros", function(req, res) {
-  let { nome, autor, preco, estoque } = req.body;
 
-  let mensagem = funcoes.cadastrarLivro(
-    nome,
-    autor,
-    preco,
-    estoque
-  );
+    let { titulo, autor, preco, quantidade } = req.body;
 
-  res.json({
-    mensagem: mensagem
-  });
+    conexao.query(
+        "INSERT INTO livros (titulo, autor, preco, quantidade) VALUES (?, ?, ?, ?)",
+        [titulo, autor, preco, quantidade],
+        function(err, results) {
+
+            if (err) {
+                return res.status(500).json({
+                    mensagem: "Erro ao cadastrar livro."
+                });
+            }
+
+            res.json({
+                mensagem: "Livro cadastrado com sucesso!"
+            });
+
+        }
+    );
+
 });
 
 app.put("/livros/:id", function(req, res) {
