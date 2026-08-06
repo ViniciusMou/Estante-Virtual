@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());
 
 app.get("/", function(req, res) {
-  res.send("API da Estante Virtual funcionando!");
+    res.send("API da Estante Virtual funcionando!");
 });
 
 app.get("/livros", function(req, res) {
@@ -26,26 +26,40 @@ app.get("/livros", function(req, res) {
 });
 
 app.get("/livros/:id", function(req, res) {
-  let id = Number(req.params.id);
 
-  let livro = funcoes.buscarLivroPorId(id);
+    const id = req.params.id;
 
-  if (!livro) {
-    return res.status(404).json({
-      mensagem: "Livro não encontrado."
-    });
-  }
+    conexao.query(
+        "SELECT * FROM livros WHERE id = ?",
+        [id],
+        function(err, results) {
 
-  res.json(livro);
+            if (err) {
+                return res.status(500).json({
+                    mensagem: "Erro ao buscar livro."
+                });
+            }
+
+            if (results.length === 0) {
+                return res.status(404).json({
+                    mensagem: "Livro não encontrado."
+                });
+            }
+
+            res.json(results[0]);
+
+        }
+    );
+
 });
 
 app.post("/livros", function(req, res) {
 
-    let { titulo, autor, preco, quantidade } = req.body;
+    const { nome, autor, preco, estoque } = req.body;
 
     conexao.query(
-        "INSERT INTO livros (titulo, autor, preco, quantidade) VALUES (?, ?, ?, ?)",
-        [titulo, autor, preco, quantidade],
+        "INSERT INTO livros (nome, autor, preco, estoque) VALUES (?, ?, ?, ?)",
+        [nome, autor, preco, estoque],
         function(err, results) {
 
             if (err) {
@@ -54,8 +68,9 @@ app.post("/livros", function(req, res) {
                 });
             }
 
-            res.json({
-                mensagem: "Livro cadastrado com sucesso!"
+            res.status(201).json({
+                mensagem: "Livro cadastrado com sucesso!",
+                id: results.insertId
             });
 
         }
@@ -64,32 +79,69 @@ app.post("/livros", function(req, res) {
 });
 
 app.put("/livros/:id", function(req, res) {
-  let id = Number(req.params.id);
-  let { nome, autor, preco, estoque } = req.body;
 
-  let livro = funcoes.editarLivro(
-    id,
-    nome,
-    autor,
-    Number(preco),
-    Number(estoque)
-  );
+    const id = req.params.id;
 
-  res.json({
-    mensagem: livro
-  });
+    const { nome, autor, preco, estoque } = req.body;
+
+    conexao.query(
+        `UPDATE livros
+         SET nome = ?, autor = ?, preco = ?, estoque = ?
+         WHERE id = ?`,
+        [nome, autor, preco, estoque, id],
+        function(err, results) {
+
+            if (err) {
+                return res.status(500).json({
+                    mensagem: "Erro ao atualizar livro."
+                });
+            }
+
+            if (results.affectedRows === 0) {
+                return res.status(404).json({
+                    mensagem: "Livro não encontrado."
+                });
+            }
+
+            res.json({
+                mensagem: "Livro atualizado com sucesso!"
+            });
+
+        }
+    );
+
 });
+
 app.delete("/livros/:id", function(req, res) {
 
-  let id = Number(req.params.id);
+    const id = req.params.id;
 
-  let mensagem = funcoes.removerLivro(id);
+    conexao.query(
+        "DELETE FROM livros WHERE id = ?",
+        [id],
+        function(err, results) {
 
-  res.json({
-    mensagem: mensagem
-  });
+            if (err) {
+                return res.status(500).json({
+                    mensagem: "Erro ao remover livro."
+                });
+            }
+
+            if (results.affectedRows === 0) {
+                return res.status(404).json({
+                    mensagem: "Livro não encontrado."
+                });
+            }
+
+            res.json({
+                mensagem: "Livro removido com sucesso!"
+            });
+
+        }
+    );
 
 });
+
 app.listen(3000, function() {
-  console.log("Servidor rodando na porta 3000");
+    console.log("Servidor rodando na porta 3000");
 });
