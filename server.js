@@ -55,11 +55,11 @@ app.get("/livros/:id", function(req, res) {
 
 app.post("/livros", function(req, res) {
 
-    const { nome, autor, preco, estoque } = req.body;
+    const { titulo, autor, preco, quantidade } = req.body;
 
     conexao.query(
-        "INSERT INTO livros (nome, autor, preco, estoque) VALUES (?, ?, ?, ?)",
-        [nome, autor, preco, estoque],
+        "INSERT INTO livros ( titulo, autor, preco, quantidade ) VALUES (?, ?, ?, ?)",
+        [ titulo, autor, preco, quantidade ],
         function(err, results) {
 
             if (err) {
@@ -82,13 +82,13 @@ app.put("/livros/:id", function(req, res) {
 
     const id = req.params.id;
 
-    const { nome, autor, preco, estoque } = req.body;
+    const {  titulo, autor, preco, quantidade  } = req.body;
 
     conexao.query(
         `UPDATE livros
-         SET nome = ?, autor = ?, preco = ?, estoque = ?
+         SET titulo = ?, autor = ?, preco = ?, quantidade = ?
          WHERE id = ?`,
-        [nome, autor, preco, estoque, id],
+        [ titulo, autor, preco, quantidade , id],
         function(err, results) {
 
             if (err) {
