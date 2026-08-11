@@ -54,9 +54,32 @@ app.get("/livros/:id", function(req, res) {
 });
 
 app.post("/livros", function(req, res) {
+    
+    console.log("BODY RECEBIDO:", req.body);
 
     const { titulo, autor, preco, quantidade } = req.body;
-
+    
+if (!titulo) {
+    return res.status(400).json({
+        mensagem: "O título é obrigatório."
+    });
+    
+}
+if (!autor) {
+    return res.status(400).json({
+        mensagem: "O autor é obrigatório."
+    });
+}
+if (preco <= 0) {
+    return res.status(400).json({
+        mensagem: "O preço deve ser maior que zero."
+    });
+}
+if (quantidade < 0) {
+    return res.status(400).json({
+        mensagem: "A quantidade não pode ser negativa."
+    });
+}
     conexao.query(
         "INSERT INTO livros ( titulo, autor, preco, quantidade ) VALUES (?, ?, ?, ?)",
         [ titulo, autor, preco, quantidade ],
@@ -83,7 +106,27 @@ app.put("/livros/:id", function(req, res) {
     const id = req.params.id;
 
     const {  titulo, autor, preco, quantidade  } = req.body;
+if (!titulo) {
+    return res.status(400).json({
+        mensagem: "O título é obrigatório."
+    });
+}
+if (!autor) {
+    return res.status(400).json({
+        mensagem: "O autor é obrigatório."
+    });
+}
+if (preco <= 0) {
+    return res.status(400).json({
+        mensagem: "O preço deve ser maior que zero."
+    });
+}
 
+if (quantidade < 0) {
+    return res.status(400).json({
+        mensagem: "A quantidade não pode ser negativa."
+    });
+}
     conexao.query(
         `UPDATE livros
          SET titulo = ?, autor = ?, preco = ?, quantidade = ?
