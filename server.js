@@ -55,24 +55,50 @@ app.get("/livros/:id", function(req, res) {
 
 app.post("/livros", function(req, res) {
     
-    console.log("BODY RECEBIDO:", req.body);
+  
 
     const { titulo, autor, preco, quantidade } = req.body;
     
-if (!titulo) {
+if (typeof titulo !== "string" || !titulo.trim()) {
     return res.status(400).json({
         mensagem: "O título é obrigatório."
     });
-    
 }
-if (!autor) {
+
+if (typeof autor !== "string" || !autor.trim()) {
     return res.status(400).json({
         mensagem: "O autor é obrigatório."
+    });
+}
+if (preco === undefined || preco === "") {
+    return res.status(400).json({
+        mensagem: "O preço é obrigatório."
+    });
+}
+
+if (!Number.isFinite(preco)) {
+    return res.status(400).json({
+        mensagem: "O preço deve ser um número válido."
     });
 }
 if (preco <= 0) {
     return res.status(400).json({
         mensagem: "O preço deve ser maior que zero."
+    });
+}
+if (quantidade === undefined || quantidade === "") {
+    return res.status(400).json({
+        mensagem: "A quantidade é obrigatória."
+    });
+}
+if (!Number.isFinite(quantidade)) {
+    return res.status(400).json({
+        mensagem: "A quantidade deve ser um número válido."
+    });
+}
+if (!Number.isInteger(quantidade)) {
+    return res.status(400).json({
+        mensagem: "A quantidade deve ser um número inteiro."
     });
 }
 if (quantidade < 0) {
@@ -106,22 +132,51 @@ app.put("/livros/:id", function(req, res) {
     const id = req.params.id;
 
     const {  titulo, autor, preco, quantidade  } = req.body;
-if (!titulo) {
+  
+if (typeof titulo !== "string" || !titulo.trim()) {
     return res.status(400).json({
         mensagem: "O título é obrigatório."
     });
 }
-if (!autor) {
+
+if (typeof autor !== "string" || !autor.trim()) {
     return res.status(400).json({
         mensagem: "O autor é obrigatório."
     });
 }
+if (preco === undefined || preco === "") {
+    return res.status(400).json({
+        mensagem: "O preço é obrigatório."
+    });
+}
+
+if (!Number.isFinite(preco)) {
+    return res.status(400).json({
+        mensagem: "O preço deve ser um número válido."
+    });
+}
+
 if (preco <= 0) {
     return res.status(400).json({
         mensagem: "O preço deve ser maior que zero."
     });
 }
 
+if (quantidade === undefined || quantidade === "") {
+    return res.status(400).json({
+        mensagem: "A quantidade é obrigatória."
+    });
+}
+if (!Number.isFinite(quantidade)) {
+    return res.status(400).json({
+        mensagem: "A quantidade deve ser um número válido."
+    });
+}
+if (!Number.isInteger(quantidade)) {
+    return res.status(400).json({
+        mensagem: "A quantidade deve ser um número inteiro."
+    });
+}
 if (quantidade < 0) {
     return res.status(400).json({
         mensagem: "A quantidade não pode ser negativa."
