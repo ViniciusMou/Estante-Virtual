@@ -5,24 +5,72 @@ const app = express();
 
 app.use(express.json());
 
-app.get("/", function(req, res) {
-    res.send("API da Estante Virtual funcionando!");
-});
-
 app.get("/livros", function(req, res) {
 
-    conexao.query("SELECT * FROM livros", function(err, results) {
+    const busca = req.query.busca;
+const pagina = req.query.pagina === undefined
+    ? 1
+    : Number(req.query.pagina);
 
-        if (err) {
-            return res.status(500).json({
-                mensagem: "Erro ao buscar livros."
-            });
-        }
-
-        res.json(results);
-
+const limite = req.query.limite === undefined
+    ? 20
+    : Number(req.query.limite);
+if (!Number.isInteger(pagina) || pagina <= 0) {
+    return res.status(400).json({
+        mensagem: "A página deve ser um número inteiro maior que zero."
     });
+}
+if (!Number.isInteger(limite) || limite <= 0) {
+    return res.status(400).json({
+        mensagem: "O limite deve ser um número inteiro maior que zero."
+    });
+}
 
+if (limite > 100) {
+    return res.status(400).json({
+        mensagem: "O limite máximo é de 100 livros."
+    });
+}
+
+const offset = (pagina - 1) * limite;
+
+    console.log("Offset:", offset);
+    console.log("Página:", pagina);
+    console.log("Limite:", limite);
+if (busca) {
+
+    conexao.query(
+        "SELECT * FROM livros WHERE titulo LIKE ? OR autor LIKE ? ORDER BY id ASC LIMIT ? OFFSET ?",
+[`%${busca}%`, `%${busca}%`, limite, offset],
+        function(err, results) {
+
+            if (err) {
+                return res.status(500).json({
+                    mensagem: "Erro ao buscar livros."
+                });
+            }
+
+            res.json(results);
+        }
+    );
+
+} else {
+
+   conexao.query(
+    "SELECT * FROM livros ORDER BY id ASC LIMIT ? OFFSET ?",
+    [limite, offset],
+    function(err, results) {
+            if (err) {
+                return res.status(500).json({
+                    mensagem: "Erro ao buscar livros."
+                });
+            }
+
+            res.json(results);
+        }
+    );
+
+}
 });
 
 app.get("/livros/:id", function(req, res) {
@@ -238,6 +286,55 @@ app.delete("/livros/:id", function(req, res) {
         }
     );
 
+});
+app.post("/livros/:id/vender", function(req, res) {
+
+    const id = req.params.id;
+conexao.query(
+    "SELECT * FROM livros WHERE id = ?",
+    [id],
+    function(err, results) {
+        if (err) {
+    return res.status(500).json({
+        mensagem: "Erro ao buscar livro."
+    });
+}
+
+        if (results.length === 0) {
+    return res.status(404).json({
+        mensagem: "Livro não encontrado."
+    });
+}
+
+const livro = results[0];
+
+if (livro.quantidade <= 0) {
+    return res.status(400).json({
+        mensagem: "Livro sem estoque."
+    });
+}
+
+conexao.query(
+    `UPDATE livros
+     SET quantidade = quantidade - 1,
+         vendidos = vendidos + 1
+     WHERE id = ?`,
+    [id],
+    function(err, results) {
+
+        if (err) {
+            return res.status(500).json({
+                mensagem: "Erro ao registrar venda."
+            });
+        }
+
+        res.json({
+            mensagem: "Venda registrada com sucesso!"
+        });
+    }
+);
+    }
+);
 });
 
 app.listen(3000, function() {
