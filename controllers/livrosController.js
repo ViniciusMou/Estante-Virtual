@@ -1,4 +1,15 @@
 const livrosService = require("../services/livrosService");
+
+function validarId(id) {
+    const numero = Number(id);
+
+    if (!Number.isInteger(numero) || numero <= 0) {
+        return null;
+    }
+
+    return numero;
+}
+
 function validarDadosLivro(titulo, autor, preco, quantidade) {
     if (typeof titulo !== "string" || !titulo.trim()) {
         return "O título é obrigatório.";
@@ -38,6 +49,7 @@ function validarDadosLivro(titulo, autor, preco, quantidade) {
 
     return null;
 }
+
 async function listar(req, res) {
     const busca = req.query.busca;
 
@@ -85,8 +97,15 @@ async function listar(req, res) {
         });
     }
 }
+
 async function buscarPorId(req, res) {
-    const id = req.params.id;
+    const id = validarId(req.params.id);
+
+    if (id === null) {
+        return res.status(400).json({
+            mensagem: "O ID deve ser um número inteiro maior que zero."
+        });
+    }
 
     try {
         const livro = await livrosService.buscarLivroPorId(id);
@@ -106,6 +125,7 @@ async function buscarPorId(req, res) {
         });
     }
 }
+
 async function cadastrar(req, res) {
     const { titulo, autor, preco, quantidade } = req.body;
 
@@ -122,10 +142,13 @@ async function cadastrar(req, res) {
         });
     }
 
+    const tituloLimpo = titulo.trim();
+    const autorLimpo = autor.trim();
+
     try {
         const id = await livrosService.cadastrarLivro(
-            titulo,
-            autor,
+            tituloLimpo,
+            autorLimpo,
             preco,
             quantidade
         );
@@ -142,8 +165,16 @@ async function cadastrar(req, res) {
         });
     }
 }
+
 async function atualizar(req, res) {
-    const id = req.params.id;
+    const id = validarId(req.params.id);
+
+    if (id === null) {
+        return res.status(400).json({
+            mensagem: "O ID deve ser um número inteiro maior que zero."
+        });
+    }
+
     const { titulo, autor, preco, quantidade } = req.body;
 
     const erroValidacao = validarDadosLivro(
@@ -159,11 +190,14 @@ async function atualizar(req, res) {
         });
     }
 
+    const tituloLimpo = titulo.trim();
+    const autorLimpo = autor.trim();
+
     try {
         const linhasAfetadas = await livrosService.atualizarLivro(
             id,
-            titulo,
-            autor,
+            tituloLimpo,
+            autorLimpo,
             preco,
             quantidade
         );
@@ -185,8 +219,15 @@ async function atualizar(req, res) {
         });
     }
 }
+
 async function remover(req, res) {
-    const id = req.params.id;
+    const id = validarId(req.params.id);
+
+    if (id === null) {
+        return res.status(400).json({
+            mensagem: "O ID deve ser um número inteiro maior que zero."
+        });
+    }
 
     try {
         const linhasAfetadas = await livrosService.removerLivro(id);
@@ -208,8 +249,15 @@ async function remover(req, res) {
         });
     }
 }
+
 async function vender(req, res) {
-    const id = req.params.id;
+    const id = validarId(req.params.id);
+
+    if (id === null) {
+        return res.status(400).json({
+            mensagem: "O ID deve ser um número inteiro maior que zero."
+        });
+    }
 
     try {
         const venda = await livrosService.venderLivro(id);
@@ -237,6 +285,7 @@ async function vender(req, res) {
         });
     }
 }
+
 module.exports = {
     listar,
     buscarPorId,
