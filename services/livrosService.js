@@ -1,13 +1,13 @@
 const livrosRepository = require("../repositories/livrosRepository");
 
 async function listarLivros(busca, limite, offset) {
-    return await livrosRepository.listar(busca, limite, offset);
+    return  livrosRepository.listar(busca, limite, offset);
 }
 async function buscarLivroPorId(id) {
-    return await livrosRepository.buscarPorId(id);
+    return  livrosRepository.buscarPorId(id);
 }
 async function cadastrarLivro(titulo, autor, preco, quantidade) {
-    return await livrosRepository.cadastrar(
+    return  livrosRepository.cadastrar(
         titulo,
         autor,
         preco,
@@ -15,7 +15,7 @@ async function cadastrarLivro(titulo, autor, preco, quantidade) {
     );
 }
 async function atualizarLivro(id, titulo, autor, preco, quantidade) {
-    return await livrosRepository.atualizar(
+    return  livrosRepository.atualizar(
         id,
         titulo,
         autor,
@@ -24,7 +24,7 @@ async function atualizarLivro(id, titulo, autor, preco, quantidade) {
     );
 }
 async function removerLivro(id) {
-    return await livrosRepository.remover(id);
+    return  livrosRepository.remover(id);
 }
 async function venderLivro(id) {
     const livro = await livrosRepository.buscarPorId(id);
