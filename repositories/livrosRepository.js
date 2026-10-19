@@ -47,16 +47,16 @@ async function cadastrar(titulo, autor, preco, quantidade) {
 
     return resultado.insertId;
 }
-async function atualizar(id, titulo, autor, preco, quantidade) {
+async function atualizar(id, titulo, autor, preco ) {
     const sql = `
         UPDATE livros
-        SET titulo = ?, autor = ?, preco = ?, quantidade = ?
+     SET titulo = ?, autor = ?, preco = ?
         WHERE id = ?
     `;
 
     const [resultado] = await conexao.promise().query(
         sql,
-        [titulo, autor, preco, quantidade, id]
+        [titulo, autor, preco, id]
     );
 
     return resultado.affectedRows;
@@ -71,23 +71,70 @@ async function remover(id) {
 
 }
 
-   async function registrarVenda(id) {
+async function registrarVenda(id, quantidadeVenda) {
     const sql = `
         UPDATE livros
-        SET quantidade = quantidade - 1,
-            vendidos = vendidos + 1
-        WHERE id = ? AND quantidade > 0
+        SET quantidade = quantidade - ?,
+            vendidos = vendidos + ?
+        WHERE id = ? AND quantidade >= ?
     `;
 
-    const [resultado] = await conexao.promise().query(sql, [id]);
+ const [resultado] = await conexao.promise().query(
+    sql,
+    [quantidadeVenda, quantidadeVenda, id, quantidadeVenda]
+);
+
 
     return resultado.affectedRows;
 }
+async function registrarEntradaEstoque(id, quantidade) {
+  const sql = `
+        UPDATE livros
+        SET quantidade = quantidade + ?
+        WHERE id = ?
+    `;
+
+    const [resultado] = await conexao.promise().query(
+        sql,
+        [quantidade, id]
+    );
+
+    return resultado.affectedRows;
+}
+async function contarLivros(busca) {
+    let sql;
+    let valores;
+
+    if (busca) {
+        sql = `
+            SELECT COUNT(*) AS total
+            FROM livros
+            WHERE titulo LIKE ? OR autor LIKE ?
+        `;
+
+        valores = [`%${busca}%`, `%${busca}%`];
+
+    } else {
+        sql = `
+            SELECT COUNT(*) AS total
+            FROM livros
+        `;
+
+        valores = [];
+    }
+
+    const [resultado] = await conexao.promise().query(sql, valores);
+
+    return resultado[0].total;
+}
+
 module.exports = {
     listar,
     buscarPorId,
     cadastrar,
     atualizar,
     remover,
-    registrarVenda
+    registrarVenda,
+    registrarEntradaEstoque,
+    contarLivros
 };

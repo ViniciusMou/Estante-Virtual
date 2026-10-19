@@ -9,6 +9,7 @@ router.post("/", livrosController.cadastrar);
 router.put("/:id", livrosController.atualizar);
 router.delete("/:id", livrosController.remover);
 router.post("/:id/vender", livrosController.vender);
+router.post("/:id/entrada-estoque", livrosController.entradaEstoque);
 
 
 module.exports = router;

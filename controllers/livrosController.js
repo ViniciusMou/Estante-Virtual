@@ -49,6 +49,29 @@ function validarDadosLivro(titulo, autor, preco, quantidade) {
 
     return null;
 }
+function validarDadosAtualizacao(titulo, autor, preco) {
+    if (typeof titulo !== "string" || !titulo.trim()) {
+        return "O título é obrigatório.";
+    }
+
+    if (typeof autor !== "string" || !autor.trim()) {
+        return "O autor é obrigatório.";
+    }
+
+    if (preco === undefined || preco === "") {
+        return "O preço é obrigatório.";
+    }
+
+    if (!Number.isFinite(preco)) {
+        return "O preço deve ser um número válido.";
+    }
+
+    if (preco <= 0) {
+        return "O preço deve ser maior que zero.";
+    }
+
+    return null;
+}
 
 async function listar(req, res) {
     const busca = req.query.busca;
@@ -175,14 +198,13 @@ async function atualizar(req, res) {
         });
     }
 
-    const { titulo, autor, preco, quantidade } = req.body;
+    const { titulo, autor, preco } = req.body;
 
-    const erroValidacao = validarDadosLivro(
-        titulo,
-        autor,
-        preco,
-        quantidade
-    );
+    const erroValidacao = validarDadosAtualizacao(
+    titulo,
+    autor,
+    preco
+);
 
     if (erroValidacao) {
         return res.status(400).json({
@@ -198,9 +220,8 @@ async function atualizar(req, res) {
             id,
             tituloLimpo,
             autorLimpo,
-            preco,
-            quantidade
-        );
+            preco
+            );
 
         if (linhasAfetadas === 0) {
             return res.status(404).json({
@@ -258,9 +279,22 @@ async function vender(req, res) {
             mensagem: "O ID deve ser um número inteiro maior que zero."
         });
     }
+  const { quantidade } = req.body;
+
+    if (
+        !Number.isFinite(quantidade) ||
+        !Number.isInteger(quantidade) ||
+        quantidade < 1
+    ) {
+        return res.status(400).json({
+            mensagem: "A quantidade deve ser um número inteiro maior que 0."
+        });
+    }
 
     try {
-        const venda = await livrosService.venderLivro(id);
+       const venda = await livrosService.venderLivro(id, quantidade);
+
+        
 
         if (venda.resultado === "nao_encontrado") {
             return res.status(404).json({
@@ -270,13 +304,15 @@ async function vender(req, res) {
 
         if (venda.resultado === "sem_estoque") {
             return res.status(400).json({
-                mensagem: "Livro sem estoque."
+                mensagem: "Não foi possível registrar a venda. O livro não possui estoque disponível."
             });
         }
 
-        return res.json({
-            mensagem: "Venda registrada com sucesso!"
-        });
+       return res.json({
+    mensagem: "Venda registrada com sucesso!",
+    quantidadeVendida: venda.quantidadeVendida,
+    estoqueRestante: venda.estoqueRestante
+});
     } catch (erro) {
         console.error(erro);
 
@@ -285,6 +321,52 @@ async function vender(req, res) {
         });
     }
 }
+async function entradaEstoque(req, res) {
+  const id = validarId(req.params.id);
+
+    if (id === null) {
+        return res.status(400).json({
+            mensagem: "O ID deve ser um número inteiro maior que zero."
+        });
+    }
+
+    const { quantidade } = req.body;
+
+    if (
+        !Number.isFinite(quantidade) ||
+        !Number.isInteger(quantidade) ||
+        quantidade < 1
+    ) {
+        return res.status(400).json({
+            mensagem: "A quantidade deve ser um número inteiro maior que 0."
+        });
+    }
+    try {
+    const entrada = await livrosService.registrarEntradaEstoque(
+        id,
+        quantidade
+    );
+
+    if (entrada.resultado === "nao_encontrado") {
+        return res.status(404).json({
+            mensagem: "Livro não encontrado."
+        });
+    }
+
+    return res.json({
+        mensagem: "Entrada de estoque registrada com sucesso!",
+        quantidadeAdicionada: entrada.quantidadeAdicionada,
+        estoqueAtual: entrada.estoqueAtual
+    });
+} catch (erro) {
+    console.error(erro);
+
+    return res.status(500).json({
+        mensagem: "Erro ao registrar entrada de estoque."
+    });
+}
+}
+
 
 module.exports = {
     listar,
@@ -292,5 +374,6 @@ module.exports = {
     cadastrar,
     atualizar,
     remover,
-    vender
+    vender,
+    entradaEstoque
 };
