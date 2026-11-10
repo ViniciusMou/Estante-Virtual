@@ -34,29 +34,29 @@ async function buscarPorId(id) {
 
     return livros[0];
 }
-async function cadastrar(titulo, autor, preco, quantidade) {
+async function cadastrar(titulo, autor, preco, quantidade, isbn, capa_url) {
     const sql = `
-        INSERT INTO livros (titulo, autor, preco, quantidade)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO livros (titulo, autor, preco, quantidade, isbn, capa_url)
+        VALUES (?, ?, ?, ?, ?, ?)
     `;
 
     const [resultado] = await conexao.promise().query(
         sql,
-        [titulo, autor, preco, quantidade]
+        [titulo, autor, preco, quantidade, isbn, capa_url]
     );
 
     return resultado.insertId;
 }
-async function atualizar(id, titulo, autor, preco ) {
+async function atualizar(id, titulo, autor, preco, isbn, capa_url) {
     const sql = `
         UPDATE livros
-     SET titulo = ?, autor = ?, preco = ?
+        SET titulo = ?, autor = ?, preco = ?, isbn = ?, capa_url = ?
         WHERE id = ?
     `;
 
     const [resultado] = await conexao.promise().query(
         sql,
-        [titulo, autor, preco, id]
+        [titulo, autor, preco, isbn, capa_url, id]
     );
 
     return resultado.affectedRows;

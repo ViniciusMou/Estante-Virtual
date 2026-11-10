@@ -13,21 +13,24 @@ async function listarLivros(busca, limite, offset) {
 async function buscarLivroPorId(id) {
     return  livrosRepository.buscarPorId(id);
 }
-async function cadastrarLivro(titulo, autor, preco, quantidade) {
-    return  livrosRepository.cadastrar(
+async function cadastrarLivro(titulo, autor, preco, quantidade, isbn, capa_url) {
+    return livrosRepository.cadastrar(
         titulo,
         autor,
         preco,
-        quantidade
+        quantidade,
+        isbn,
+        capa_url
     );
 }
-async function atualizarLivro(id, titulo, autor, preco) {
-    return  livrosRepository.atualizar(
+async function atualizarLivro(id, titulo, autor, preco, isbn, capa_url) {
+    return livrosRepository.atualizar(
         id,
         titulo,
         autor,
-        preco
-        
+        preco,
+        isbn,
+        capa_url
     );
 }
 async function removerLivro(id) {

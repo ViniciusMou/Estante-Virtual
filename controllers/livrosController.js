@@ -150,7 +150,7 @@ async function buscarPorId(req, res) {
 }
 
 async function cadastrar(req, res) {
-    const { titulo, autor, preco, quantidade } = req.body;
+    const { titulo, autor, preco, quantidade, isbn, capa_url } = req.body;
 
     const erroValidacao = validarDadosLivro(
         titulo,
@@ -165,16 +165,26 @@ async function cadastrar(req, res) {
         });
     }
 
+    const erroCapa = validarDadosCapa(isbn, capa_url);
+
+    if (erroCapa) {
+        return res.status(400).json({
+            mensagem: erroCapa
+        });
+    }
+
     const tituloLimpo = titulo.trim();
     const autorLimpo = autor.trim();
 
     try {
-        const id = await livrosService.cadastrarLivro(
-            tituloLimpo,
-            autorLimpo,
-            preco,
-            quantidade
-        );
+      const id = await livrosService.cadastrarLivro(
+    tituloLimpo,
+    autorLimpo,
+    preco,
+    quantidade,
+    isbn?.trim() || null,
+    capa_url?.trim() || null
+);
 
         return res.status(201).json({
             mensagem: "Livro cadastrado com sucesso!",
@@ -197,9 +207,12 @@ async function atualizar(req, res) {
             mensagem: "O ID deve ser um número inteiro maior que zero."
         });
     }
+console.log("BODY:", req.body);
+console.log("CONTENT-TYPE:", req.headers["content-type"]);
 
-    const { titulo, autor, preco } = req.body;
 
+   const { titulo, autor, preco, isbn, capa_url } = req.body;
+    console.log("DADOS RECEBIDOS:", req.body);
     const erroValidacao = validarDadosAtualizacao(
     titulo,
     autor,
@@ -211,17 +224,25 @@ async function atualizar(req, res) {
             mensagem: erroValidacao
         });
     }
+const erroCapa = validarDadosCapa(isbn, capa_url);
 
+if (erroCapa) {
+    return res.status(400).json({
+        mensagem: erroCapa
+    });
+}
     const tituloLimpo = titulo.trim();
     const autorLimpo = autor.trim();
 
     try {
         const linhasAfetadas = await livrosService.atualizarLivro(
-            id,
-            tituloLimpo,
-            autorLimpo,
-            preco
-            );
+    id,
+    tituloLimpo,
+    autorLimpo,
+    preco,
+    isbn?.trim() || null,
+    capa_url?.trim() || null
+);
 
         if (linhasAfetadas === 0) {
             return res.status(404).json({
@@ -239,6 +260,31 @@ async function atualizar(req, res) {
             mensagem: "Erro ao atualizar livro."
         });
     }
+}
+function validarDadosCapa(isbn, capa_url) {
+    if (isbn !== undefined && isbn !== null && isbn !== "") {
+        if (typeof isbn !== "string" || isbn.length > 20) {
+            return "O ISBN deve ser um texto de até 20 caracteres.";
+        }
+    }
+
+    if (capa_url !== undefined && capa_url !== null && capa_url !== "") {
+        if (typeof capa_url !== "string") {
+            return "A URL da capa deve ser um texto válido.";
+        }
+
+        try {
+            const url = new URL(capa_url);
+
+            if (url.protocol !== "http:" && url.protocol !== "https:") {
+                return "A URL da capa deve utilizar HTTP ou HTTPS.";
+            }
+        } catch {
+            return "A URL da capa é inválida.";
+        }
+    }
+
+    return null;
 }
 
 async function remover(req, res) {
